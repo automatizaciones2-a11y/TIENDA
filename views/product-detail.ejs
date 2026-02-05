@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= product.name %> - TIENDA DNA</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="logo">TIENDA DNA</a>
+            <div class="nav-links">
+                <a href="/">🏠 Inicio</a>
+
+                <% if (user) { %>
+                    <a href="/cart" class="cart-icon">
+                        🛒 Carrito
+                        <% if (cartCount > 0) { %>
+                            <span class="cart-count"><%= cartCount %></span>
+                        <% } %>
+                    </a>
+                    <a href="/orders">📦 Mis Pedidos</a>
+                    <a href="/profile">👤 <%= user.name %></a>
+
+                    <% if (isAdmin) { %>
+                        <a href="/admin" style="color: #ff4757;">⚙️ Admin</a>
+                    <% } %>
+
+                    <a href="/auth/logout">🚪 Salir</a>
+                <% } else { %>
+                    <a href="/auth/login">🔐 Iniciar Sesión</a>
+                    <a href="/auth/register">📝 Registrarse</a>
+                <% } %>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <% if (message) { %>
+            <div class="alert alert-success"><%= message %></div>
+        <% } %>
+
+        <% if (error) { %>
+            <div class="alert alert-error"><%= error %></div>
+        <% } %>
+
+        <div class="product-detail">
+            <div class="product-detail-image">
+                <% if (product.image) { %>
+                    <img src="/uploads/<%= product.image %>" alt="<%= product.name %>">
+                <% } else { %>
+                    <div class="no-image">💻</div>
+                <% } %>
+            </div>
+
+            <div class="product-detail-info">
+                <a href="/" class="back-link">← Volver a productos</a>
+
+                <% if (product.category_name) { %>
+                    <span class="product-category"><%= product.category_name %></span>
+                <% } %>
+
+                <h1 class="product-detail-name"><%= product.name %></h1>
+
+                <div class="product-detail-price">$<%= parseFloat(product.price).toFixed(2) %></div>
+
+                <div class="product-detail-stock">
+                    <% if (product.stock > 0) { %>
+                        <span class="in-stock">✅ En stock: <%= product.stock %> unidades disponibles</span>
+                    <% } else { %>
+                        <span class="out-of-stock">❌ Sin stock</span>
+                    <% } %>
+                </div>
+
+                <div class="product-detail-description">
+                    <h3>Descripción</h3>
+                    <p><%= product.description || 'Sin descripción disponible.' %></p>
+                </div>
+
+                <% if (user && product.stock > 0) { %>
+                    <form method="POST" action="/cart/add/<%= product.id %>" class="add-to-cart-form">
+                        <div class="quantity-selector">
+                            <label>Cantidad:</label>
+                            <input type="number" name="quantity" value="1" min="1" max="<%= product.stock %>">
+                        </div>
+                        <button type="submit" class="btn btn-large">
+                            🛒 Agregar al Carrito
+                        </button>
+                    </form>
+                <% } else if (!user) { %>
+                    <a href="/auth/login" class="btn btn-large">
+                        🔐 Inicia sesión para comprar
+                    </a>
+                <% } else { %>
+                    <button class="btn btn-large" style="opacity: 0.5;" disabled>
+                        Sin stock disponible
+                    </button>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <%- include('partials/chatbot') %>
+
+    <style>
+        .product-detail {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 40px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        @media (max-width: 800px) {
+            .product-detail {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+        }
+
+        .product-detail-image {
+            background: #e5e7eb;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            overflow: hidden;
+        }
+
+        .product-detail-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-detail-image .no-image {
+            font-size: 120px;
+        }
+
+        .back-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 15px;
+            transition: 0.3s;
+        }
+
+        .back-link:hover {
+            color: var(--text-main);
+        }
+
+        .product-category {
+            display: inline-block;
+            background: #e5e7eb;
+            color: var(--text-muted);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .product-detail-name {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 15px;
+        }
+
+        .product-detail-price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        .product-detail-stock {
+            margin-bottom: 25px;
+        }
+
+        .in-stock {
+            color: #059669;
+            font-weight: 600;
+        }
+
+        .out-of-stock {
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        .product-detail-description {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--input-bg);
+            border-radius: 14px;
+        }
+
+        .product-detail-description h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .product-detail-description p {
+            color: var(--text-main);
+            line-height: 1.8;
+        }
+
+        .add-to-cart-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .quantity-selector label {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .quantity-selector input {
+            width: 80px;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .btn-large {
+            padding: 18px 30px;
+            font-size: 16px;
+        }
+    </style>
+
+    <script>
+        document.querySelectorAll('.alert').forEach(alert => {
+            setTimeout(() => {
+                alert.style.transition = 'opacity 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

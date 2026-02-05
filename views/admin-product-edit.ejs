@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Producto - Admin</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="logo">TIENDA DNA</a>
+            <div class="nav-links">
+                <a href="/">🏠 Inicio</a>
+                <a href="/admin">⚙️ Admin</a>
+                <a href="/admin/products">📦 Productos</a>
+                <a href="/admin/orders">📋 Pedidos</a>
+                <a href="/auth/logout">🚪 Salir</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h1>✏️ Editar Producto</h1>
+        </div>
+
+        <% if (message) { %>
+            <div class="alert alert-success"><%= message %></div>
+        <% } %>
+
+        <% if (error) { %>
+            <div class="alert alert-error"><%= error %></div>
+        <% } %>
+
+        <div class="card">
+            <form method="POST" action="/admin/products/edit/<%= product.id %>" enctype="multipart/form-data" class="form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">Nombre</label>
+                        <input type="text" id="name" name="name" required value="<%= product.name %>">
+                    </div>
+                    <div class="form-group">
+                        <label for="category_id">Categoría</label>
+                        <select id="category_id" name="category_id">
+                            <option value="">Sin categoría</option>
+                            <% categories.forEach(cat => { %>
+                                <option value="<%= cat.id %>" <%= product.category_id == cat.id ? 'selected' : '' %>>
+                                    <%= cat.name %>
+                                </option>
+                            <% }) %>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Descripción</label>
+                    <textarea id="description" name="description" rows="3"><%= product.description %></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="price">Precio ($)</label>
+                        <input type="number" id="price" name="price" step="0.01" min="0" required value="<%= product.price %>">
+                    </div>
+                    <div class="form-group">
+                        <label for="stock">Stock</label>
+                        <input type="number" id="stock" name="stock" min="0" required value="<%= product.stock %>">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="image">Imagen (dejar vacío para mantener la actual)</label>
+                    <% if (product.image) { %>
+                        <div style="margin-bottom: 10px;">
+                            <img src="/uploads/<%= product.image %>" alt="" style="max-width: 200px;">
+                        </div>
+                    <% } %>
+                    <input type="file" id="image" name="image" accept="image/*">
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="btn">Guardar Cambios</button>
+                    <a href="/admin/products" class="btn" style="background: #666;">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

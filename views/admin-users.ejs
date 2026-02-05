@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuarios - Admin</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="logo">TIENDA DNA</a>
+            <div class="nav-links">
+                <a href="/">Inicio</a>
+                <a href="/admin">Admin</a>
+                <a href="/admin/products">Productos</a>
+                <a href="/admin/orders">Pedidos</a>
+                <a href="/admin/users">Usuarios</a>
+                <a href="/auth/logout">Salir</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h1>Usuarios Registrados</h1>
+            <p style="color: var(--text-muted); margin-top: 10px;">Gestiona los usuarios de la tienda</p>
+        </div>
+
+        <% if (message) { %>
+            <div class="alert alert-success"><%= message %></div>
+        <% } %>
+
+        <% if (error) { %>
+            <div class="alert alert-error"><%= error %></div>
+        <% } %>
+
+        <div class="card" style="margin-top: 20px; padding: 20px;">
+            <% if (users && users.length > 0) { %>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th>Pedidos</th>
+                            <th>Total Gastado</th>
+                            <th>Registro</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% users.forEach(u => { %>
+                            <tr>
+                                <td>#<%= u.id %></td>
+                                <td>
+                                    <div class="user-info">
+                                        <div class="user-avatar"><%= u.name.charAt(0).toUpperCase() %></div>
+                                        <span><%= u.name %></span>
+                                    </div>
+                                </td>
+                                <td><%= u.email %></td>
+                                <td>
+                                    <span class="role-badge role-<%= u.role %>">
+                                        <%= u.role === 'admin' ? 'Admin' : 'Cliente' %>
+                                    </span>
+                                </td>
+                                <td><%= u.total_orders %></td>
+                                <td>$<%= parseFloat(u.total_spent || 0).toFixed(2) %></td>
+                                <td><%= new Date(u.created_at).toLocaleDateString('es-ES') %></td>
+                                <td>
+                                    <% if (u.id !== user.id) { %>
+                                        <form method="POST" action="/admin/users/<%= u.id %>/role" style="display: inline;">
+                                            <select name="role" class="role-select" onchange="this.form.submit()">
+                                                <option value="user" <%= u.role === 'user' ? 'selected' : '' %>>Cliente</option>
+                                                <option value="admin" <%= u.role === 'admin' ? 'selected' : '' %>>Admin</option>
+                                            </select>
+                                        </form>
+                                    <% } else { %>
+                                        <span class="current-user">(Tu cuenta)</span>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            <% } else { %>
+                <div class="empty-state">
+                    <div class="empty-state-icon">👥</div>
+                    <h2>No hay usuarios</h2>
+                    <p>Los usuarios aparecerán aquí cuando se registren</p>
+                </div>
+            <% } %>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <a href="/admin" class="btn btn-secondary">← Volver al Panel</a>
+        </div>
+    </div>
+
+    <style>
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .role-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .role-admin {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            color: #dc2626;
+        }
+
+        .role-user {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .role-select {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--input-bg);
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .current-user {
+            color: var(--text-muted);
+            font-size: 13px;
+            font-style: italic;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+    </style>
+
+    <script>
+        document.querySelectorAll('.alert').forEach(alert => {
+            setTimeout(() => {
+                alert.style.transition = 'opacity 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

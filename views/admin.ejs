@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin - Tienda Electrónica</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="logo">TIENDA DNA</a>
+            <div class="nav-links">
+                <a href="/">🏠 Inicio</a>
+                <a href="/admin" style="color: #ff4757;">⚙️ Admin</a>
+                <a href="/admin/products">📦 Productos</a>
+                <a href="/admin/orders">📋 Pedidos</a>
+                <a href="/auth/logout">🚪 Salir</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h1>⚙️ Panel de Administración</h1>
+        </div>
+
+        <% if (message) { %>
+            <div class="alert alert-success"><%= message %></div>
+        <% } %>
+
+        <% if (error) { %>
+            <div class="alert alert-error"><%= error %></div>
+        <% } %>
+
+        <div class="stats-row">
+            <div class="stat-card-horizontal">
+                <div class="stat-number"><%= stats.products %></div>
+                <div class="stat-content">
+                    <div class="stat-label">Productos</div>
+                    <a href="/admin/products" class="stat-link">Gestionar →</a>
+                </div>
+                <div class="stat-icon-bg">📦</div>
+            </div>
+
+            <div class="stat-card-horizontal">
+                <div class="stat-number"><%= stats.orders %></div>
+                <div class="stat-content">
+                    <div class="stat-label">Pedidos</div>
+                    <a href="/admin/orders" class="stat-link">Ver todos →</a>
+                </div>
+                <div class="stat-icon-bg">🛒</div>
+            </div>
+
+            <div class="stat-card-horizontal">
+                <div class="stat-number"><%= stats.users %></div>
+                <div class="stat-content">
+                    <div class="stat-label">Usuarios</div>
+                    <a href="/admin/users" class="stat-link">Ver todos →</a>
+                </div>
+                <div class="stat-icon-bg">👥</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📋 Pedidos Recientes</h2>
+            <% if (recentOrders && recentOrders.length > 0) { %>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Cliente</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% recentOrders.forEach(order => { %>
+                            <tr>
+                                <td>#<%= order.id %></td>
+                                <td><%= order.user_name %></td>
+                                <td>$<%= parseFloat(order.total).toFixed(2) %></td>
+                                <td><span class="status-<%= order.status.toLowerCase() %>"><%= order.status %></span></td>
+                                <td><%= new Date(order.created_at).toLocaleDateString('es-ES') %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            <% } else { %>
+                <p>No hay pedidos recientes</p>
+            <% } %>
+        </div>
+    </div>
+</body>
+</html>

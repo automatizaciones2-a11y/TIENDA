@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'Tienda ' %></title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="logo">TIENDA DNA</a>
+            <div class="nav-links">
+                <a href="/">🏠 Inicio</a>
+                
+                <% if (user) { %>
+                    <a href="/cart" class="cart-icon">
+                        🛒 Carrito
+                        <% if (cartCount > 0) { %>
+                            <span class="cart-count"><%= cartCount %></span>
+                        <% } %>
+                    </a>
+                    <a href="/orders">📦 Mis Pedidos</a>
+                    <a href="/profile">👤 <%= user.name %></a>
+                    
+                    <% if (isAdmin) { %>
+                        <a href="/admin" style="color: #ff4757;">⚙️ Admin</a>
+                    <% } %>
+                    
+                    <a href="/auth/logout">🚪 Salir</a>
+                <% } else { %>
+                    <a href="/auth/login">🔐 Iniciar Sesión</a>
+                    <a href="/auth/register">📝 Registrarse</a>
+                <% } %>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido -->
+    <div class="container">
+        <%- body %>
+    </div>
+
+    <!-- Chatbot -->
+    <%- include('partials/chatbot') %>
+</body>
+</html>

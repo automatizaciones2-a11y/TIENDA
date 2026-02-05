@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - Tienda Electrónica</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="logo">TIENDA DNA</a>
+            <div class="nav-links">
+                <a href="/">🏠 Inicio</a>
+                <a href="/cart">🛒 Carrito</a>
+                <a href="/orders">📦 Mis Pedidos</a>
+                <a href="/profile">👤 <%= user.name %></a>
+                <% if (isAdmin) { %>
+                    <a href="/admin" style="color: #ff4757;">⚙️ Admin</a>
+                <% } %>
+                <a href="/auth/logout">🚪 Salir</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h1>👤 Mi Perfil</h1>
+        </div>
+
+        <% if (message) { %>
+            <div class="alert alert-success"><%= message %></div>
+        <% } %>
+
+        <% if (error) { %>
+            <div class="alert alert-error"><%= error %></div>
+        <% } %>
+
+        <div class="card">
+            <div class="profile-info">
+                <div class="profile-field">
+                    <label>Nombre</label>
+                    <p><%= user.name %></p>
+                </div>
+
+                <div class="profile-field">
+                    <label>Email</label>
+                    <p><%= user.email %></p>
+                </div>
+
+            </div>
+
+            <div style="margin-top: 30px;">
+                <a href="/orders" class="btn">📦 Ver mis pedidos</a>
+                <a href="/" class="btn" style="background: #6b7280;">🛒 Seguir comprando</a>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .profile-field {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 15px;
+        }
+
+        .profile-field label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .profile-field p {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+    </style>
+
+    <%- include('partials/chatbot') %>
+</body>
+</html>

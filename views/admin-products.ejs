@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionar Productos - Admin</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="logo">TIENDA DNA</a>
+            <div class="nav-links">
+                <a href="/">🏠 Inicio</a>
+                <a href="/admin">⚙️ Admin</a>
+                <a href="/admin/products" style="color: #ff4757;">📦 Productos</a>
+                <a href="/admin/orders">📋 Pedidos</a>
+                <a href="/auth/logout">🚪 Salir</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h1>📦 Gestionar Productos</h1>
+        </div>
+
+        <% if (message) { %>
+            <div class="alert alert-success"><%= message %></div>
+        <% } %>
+
+        <% if (error) { %>
+            <div class="alert alert-error"><%= error %></div>
+        <% } %>
+
+        <!-- Formulario para agregar producto -->
+        <div class="card">
+            <h2>➕ Agregar Producto</h2>
+            <form method="POST" action="/admin/products" enctype="multipart/form-data" class="form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">Nombre</label>
+                        <input type="text" id="name" name="name" required placeholder="Nombre del producto">
+                    </div>
+                    <div class="form-group">
+                        <label for="category_id">Categoría</label>
+                        <select id="category_id" name="category_id">
+                            <option value="">Sin categoría</option>
+                            <% categories.forEach(cat => { %>
+                                <option value="<%= cat.id %>"><%= cat.name %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Descripción</label>
+                    <textarea id="description" name="description" rows="3" placeholder="Descripción del producto"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="price">Precio ($)</label>
+                        <input type="number" id="price" name="price" step="0.01" min="0" required placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="stock">Stock</label>
+                        <input type="number" id="stock" name="stock" min="0" required placeholder="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="image">Imagen</label>
+                    <input type="file" id="image" name="image" accept="image/*">
+                </div>
+
+                <button type="submit" class="btn">Agregar Producto</button>
+            </form>
+        </div>
+
+        <!-- Lista de productos -->
+        <div class="card">
+            <h2>📋 Productos Existentes (<%= products.length %>)</h2>
+
+            <% if (products && products.length > 0) { %>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Imagen</th>
+                            <th>Nombre</th>
+                            <th>Categoría</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% products.forEach(product => { %>
+                            <tr>
+                                <td>
+                                    <% if (product.image) { %>
+                                        <img src="/uploads/<%= product.image %>" alt="" style="width: 50px; height: 50px; object-fit: cover;">
+                                    <% } else { %>
+                                        📷
+                                    <% } %>
+                                </td>
+                                <td><%= product.name %></td>
+                                <td><%= product.category_name || 'Sin categoría' %></td>
+                                <td>$<%= parseFloat(product.price).toFixed(2) %></td>
+                                <td><%= product.stock %></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a href="/admin/products/edit/<%= product.id %>" class="btn-action btn-edit">✏️ Editar</a>
+                                        <form method="POST" action="/admin/products/delete/<%= product.id %>" style="display: inline;" onsubmit="return confirm('¿Eliminar este producto?')">
+                                            <button type="submit" class="btn-action btn-delete">🗑️</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            <% } else { %>
+                <p>No hay productos. Agrega el primero usando el formulario de arriba.</p>
+            <% } %>
+        </div>
+    </div>
+</body>
+</html>

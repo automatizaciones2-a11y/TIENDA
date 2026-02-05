@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionar Pedidos - Admin</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="logo">TIENDA DNA</a>
+            <div class="nav-links">
+                <a href="/">🏠 Inicio</a>
+                <a href="/admin">⚙️ Admin</a>
+                <a href="/admin/products">📦 Productos</a>
+                <a href="/admin/orders" style="color: #ff4757;">📋 Pedidos</a>
+                <a href="/auth/logout">🚪 Salir</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h1>📋 Gestionar Pedidos</h1>
+        </div>
+
+        <% if (message) { %>
+            <div class="alert alert-success"><%= message %></div>
+        <% } %>
+
+        <% if (error) { %>
+            <div class="alert alert-error"><%= error %></div>
+        <% } %>
+
+        <div class="card">
+            <% if (orders && orders.length > 0) { %>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Cliente</th>
+                            <th>Email</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% orders.forEach(order => { %>
+                            <tr>
+                                <td>#<%= order.id %></td>
+                                <td><%= order.user_name %></td>
+                                <td><%= order.user_email %></td>
+                                <td>$<%= parseFloat(order.total).toFixed(2) %></td>
+                                <td>
+                                    <span class="status-<%= order.status.toLowerCase() %>">
+                                        <%= order.status %>
+                                    </span>
+                                </td>
+                                <td><%= new Date(order.created_at).toLocaleDateString('es-ES') %></td>
+                                <td>
+                                    <form method="POST" action="/admin/orders/<%= order.id %>/status" style="display: inline;">
+                                        <select name="status" onchange="this.form.submit()">
+                                            <option value="Pendiente" <%= order.status === 'Pendiente' ? 'selected' : '' %>>Pendiente</option>
+                                            <option value="Procesando" <%= order.status === 'Procesando' ? 'selected' : '' %>>Procesando</option>
+                                            <option value="Enviado" <%= order.status === 'Enviado' ? 'selected' : '' %>>Enviado</option>
+                                            <option value="Entregado" <%= order.status === 'Entregado' ? 'selected' : '' %>>Entregado</option>
+                                            <option value="Cancelado" <%= order.status === 'Cancelado' ? 'selected' : '' %>>Cancelado</option>
+                                        </select>
+                                    </form>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            <% } else { %>
+                <p>No hay pedidos todavía.</p>
+            <% } %>
+        </div>
+    </div>
+</body>
+</html>

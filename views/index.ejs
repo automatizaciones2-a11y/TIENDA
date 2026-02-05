@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIENDA DNA</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="logo">TIENDA DNA</a>
+            <div class="nav-links">
+                <a href="/">🏠 Inicio</a>
+                
+                <% if (user) { %>
+                    <a href="/cart" class="cart-icon">
+                        🛒 Carrito
+                        <% if (cartCount > 0) { %>
+                            <span class="cart-count"><%= cartCount %></span>
+                        <% } %>
+                    </a>
+                    <a href="/orders">📦 Mis Pedidos</a>
+                    <a href="/profile">👤 <%= user.name %></a>
+                    
+                    <% if (isAdmin) { %>
+                        <a href="/admin" style="color: #ff4757;">⚙️ Admin</a>
+                    <% } %>
+                    
+                    <a href="/auth/logout">🚪 Salir</a>
+                <% } else { %>
+                    <a href="/auth/login">🔐 Iniciar Sesión</a>
+                    <a href="/auth/register">📝 Registrarse</a>
+                <% } %>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h1>Productos Disponibles</h1>
+            <p style="color: #666; margin-top: 10px;">Explora nuestra selección de productos</p>
+        </div>
+
+        <% if (message) { %>
+            <div class="alert alert-success"><%= message %></div>
+        <% } %>
+        
+        <% if (error) { %>
+            <div class="alert alert-error"><%= error %></div>
+        <% } %>
+
+        <% if (products && products.length > 0) { %>
+            <div class="products-grid">
+                <% products.forEach(product => { %>
+                    <div class="product-card">
+                        <a href="/products/<%= product.id %>" class="product-link">
+                            <div class="product-image">
+                                <% if (product.image) { %>
+                                    <img src="/uploads/<%= product.image %>" alt="<%= product.name %>">
+                                <% } else { %>
+                                    💻
+                                <% } %>
+                            </div>
+                        </a>
+                        <div class="product-info">
+                            <a href="/products/<%= product.id %>" class="product-name-link">
+                                <div class="product-name"><%= product.name %></div>
+                            </a>
+                            <div class="product-description"><%= product.description ? product.description.substring(0, 100) : '' %>...</div>
+                            <div class="product-price">$<%= parseFloat(product.price).toFixed(2) %></div>
+                            <div class="product-stock">
+                                <% if (product.stock > 0) { %>
+                                    ✅ Stock: <%= product.stock %> unidades
+                                <% } else { %>
+                                    ❌ Sin stock
+                                <% } %>
+                            </div>
+
+                            <% if (user && product.stock > 0) { %>
+                                <form method="POST" action="/cart/add/<%= product.id %>">
+                                    <button type="submit" class="btn" style="width: 100%;">
+                                        🛒 Agregar al Carrito
+                                    </button>
+                                </form>
+                            <% } else if (!user) { %>
+                                <a href="/auth/login" class="btn" style="width: 100%; text-align: center;">
+                                    🔐 Inicia sesión para comprar
+                                </a>
+                            <% } else { %>
+                                <button class="btn" style="width: 100%; opacity: 0.5;" disabled>
+                                    Sin stock
+                                </button>
+                            <% } %>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <div class="empty-state">
+                <div class="empty-state-icon">📦</div>
+                <h2>No hay productos disponibles</h2>
+                <p>Los productos aparecerán aquí cuando estén disponibles</p>
+                <% if (isAdmin) { %>
+                    <a href="/admin/products" class="btn" style="margin-top: 20px;">
+                        ➕ Agregar Productos
+                    </a>
+                <% } %>
+            </div>
+        <% } %>
+    </div>
+
+    <%- include('partials/chatbot') %>
+
+    <script>
+        // Auto-ocultar alertas después de 3 segundos
+        document.querySelectorAll('.alert').forEach(alert => {
+            setTimeout(() => {
+                alert.style.transition = 'opacity 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
